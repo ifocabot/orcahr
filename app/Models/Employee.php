@@ -101,5 +101,20 @@ class Employee extends Model
     {
         return $this->hasMany(ScheduleAssignment::class)->latest('effective_from');
     }
+
+    public function clockLogs(): HasMany
+    {
+        return $this->hasMany(ClockLog::class)->latest('timestamp');
+    }
+
+    public function dailyAttendances(): HasMany
+    {
+        return $this->hasMany(DailyAttendance::class)->latest('date');
+    }
+
+    public function leaveRequests(): HasMany
+    {
+        return $this->hasMany(LeaveRequest::class)->latest();
+    }
 }
 

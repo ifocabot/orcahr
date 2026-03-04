@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Attendance\AttendanceController;
 use App\Http\Controllers\Attendance\ClockController;
 use App\Http\Controllers\Attendance\ScheduleController;
 use App\Http\Controllers\Employee\EmployeeDocumentController;
@@ -9,6 +10,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Settings\DepartmentController;
 use App\Http\Controllers\Settings\HolidayController;
 use App\Http\Controllers\Settings\JobLevelController;
+use App\Http\Controllers\Settings\LeaveTypeController;
 use App\Http\Controllers\Settings\PositionController;
 use App\Http\Controllers\Settings\ShiftController;
 use Illuminate\Support\Facades\Route;
@@ -30,8 +32,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// Attendance — halaman absensi harian karyawan
+// Attendance
 Route::middleware(['auth'])->prefix('attendance')->name('attendance.')->group(function () {
+    Route::get('/', [AttendanceController::class, 'index'])->name('index');  // rekap admin
     Route::get('/clock', [ClockController::class, 'index'])->name('clock');
     Route::post('/clock', [ClockController::class, 'store'])->name('clock.store');
 });
@@ -62,13 +65,14 @@ Route::middleware(['auth'])->group(function () {
     });
 });
 
-// Settings (sistem) — hanya super-admin via 'system-settings' permission
+// Settings
 Route::middleware(['auth'])->prefix('settings')->name('settings.')->group(function () {
     Route::resource('job-levels', JobLevelController::class)->except(['create', 'edit']);
     Route::resource('departments', DepartmentController::class)->except(['create', 'edit']);
     Route::resource('positions', PositionController::class)->except(['create', 'edit']);
     Route::resource('shifts', ShiftController::class)->except(['create', 'edit']);
     Route::resource('holidays', HolidayController::class)->except(['create', 'edit']);
+    Route::resource('leave-types', LeaveTypeController::class)->except(['create', 'edit']);
 });
 
 require __DIR__ . '/auth.php';

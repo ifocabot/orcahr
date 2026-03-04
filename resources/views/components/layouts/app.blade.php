@@ -61,15 +61,26 @@
             <div class="pt-4 pb-1">
                 <p class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-widest">Kehadiran</p>
             </div>
-            @can('view-attendance')
-                <a href="#" class="sidebar-nav-item {{ request()->routeIs('attendance.*') ? 'active' : '' }}">
+            <a href="{{ route('attendance.clock') }}"
+                class="sidebar-nav-item {{ request()->routeIs('attendance.clock*') ? 'active' : '' }}">
+                <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Absensi Harian
+            </a>
+            @can('manage-attendance')
+                <a href="{{ route('attendance.index') }}"
+                    class="sidebar-nav-item {{ request()->routeIs('attendance.index') ? 'active' : '' }}">
                     <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.5a9 9 0 109 9m-9-9v9m0-9h9" />
                     </svg>
-                    Absensi
+                    Rekap Absensi
                 </a>
-                <a href="#" class="sidebar-nav-item {{ request()->routeIs('leave.*') ? 'active' : '' }}">
+            @endcan
+            @can('view-leave')
+                <a href="{{ route('leave.index') }}"
+                    class="sidebar-nav-item {{ request()->routeIs('leave.*') ? 'active' : '' }}">
                     <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
                         <path stroke-linecap="round" stroke-linejoin="round"
                             d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />

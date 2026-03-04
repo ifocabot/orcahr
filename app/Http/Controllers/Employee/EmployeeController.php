@@ -92,6 +92,8 @@ class EmployeeController extends Controller
             'bankAccounts',
             'bpjs',
             'documents',
+            'currentSchedule.shift',
+            'scheduleHistory.shift',
         ]);
         return view('employees.show', compact('employee'));
     }

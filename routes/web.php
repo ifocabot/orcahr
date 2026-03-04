@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Attendance\ScheduleController;
 use App\Http\Controllers\Employee\EmployeeDocumentController;
 use App\Http\Controllers\Employee\EmployeeController;
 use App\Http\Controllers\ProfileController;
@@ -35,6 +36,12 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/', [EmployeeDocumentController::class, 'store'])->name('store');
         Route::get('/{document}/download', [EmployeeDocumentController::class, 'download'])->name('download');
         Route::delete('/{document}', [EmployeeDocumentController::class, 'destroy'])->name('destroy');
+    });
+
+    // Employee Schedule Assignment (nested)
+    Route::prefix('employees/{employee}/schedules')->name('employees.schedules.')->group(function () {
+        Route::post('/', [ScheduleController::class, 'store'])->name('store');
+        Route::delete('/{schedule}', [ScheduleController::class, 'destroy'])->name('destroy');
     });
 });
 

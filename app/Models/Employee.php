@@ -89,5 +89,17 @@ class Employee extends Model
     {
         return $this->hasMany(EmployeeDocument::class)->latest();
     }
+
+    public function currentSchedule(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(ScheduleAssignment::class)
+            ->whereNull('effective_to')
+            ->latest('effective_from');
+    }
+
+    public function scheduleHistory(): HasMany
+    {
+        return $this->hasMany(ScheduleAssignment::class)->latest('effective_from');
+    }
 }
 

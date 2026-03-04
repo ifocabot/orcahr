@@ -272,6 +272,11 @@
         </div>
     </div>
 
+    {{-- Jadwal Kerja (Shift) --}}
+    <div class="mt-5">
+        @include('employees.partials.schedule')
+    </div>
+
     {{-- Dokumen Karyawan --}}
     <div class="mt-5">
         @include('employees.partials.documents')

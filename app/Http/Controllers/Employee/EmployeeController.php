@@ -16,10 +16,12 @@ class EmployeeController extends Controller
 {
     public function __construct(private EmployeeService $service)
     {
+        // Auth check via route middleware (web + auth)
     }
 
     public function index(): View
     {
+        $this->authorize('viewAny', Employee::class);
         $employees = $this->service->all();
         return view('employees.index', compact('employees'));
     }
@@ -80,6 +82,7 @@ class EmployeeController extends Controller
 
     public function show(Employee $employee): View
     {
+        $this->authorize('view', $employee);
         $employee->load([
             'currentEmployment.department',
             'currentEmployment.position',
@@ -129,6 +132,7 @@ class EmployeeController extends Controller
 
     public function destroy(Employee $employee): RedirectResponse
     {
+        $this->authorize('delete', $employee);
         $this->service->delete($employee);
         return redirect()->route('employees.index')
             ->with('success', 'Karyawan berhasil dihapus.');
@@ -146,11 +150,13 @@ class EmployeeController extends Controller
 
     public function create(): View
     {
+        $this->authorize('create', Employee::class);
         return view('employees.create', $this->dropdownData());
     }
 
     public function edit(Employee $employee): View
     {
+        $this->authorize('update', $employee);
         $employee->load(['currentEmployment', 'bankAccounts', 'bpjs']);
         return view('employees.edit', array_merge(['employee' => $employee], $this->dropdownData()));
     }

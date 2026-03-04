@@ -66,9 +66,13 @@ class RolePermissionSeeder extends Seeder
         // HR Admin
         $hrAdmin = Role::firstOrCreate(['name' => 'hr-admin', 'guard_name' => 'web']);
         $hrAdmin->syncPermissions([
-            'manage-employees',
             'view-employees',
+            'create-employees',
+            'edit-employees',
             'view-sensitive-data',
+            'view-employment-history',
+            'manage-bank-accounts',
+            'manage-bpjs',
             'manage-attendance',
             'view-attendance',
             'approve-attendance',

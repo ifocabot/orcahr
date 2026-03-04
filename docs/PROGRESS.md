@@ -172,53 +172,38 @@
 
 | # | Issue | Priority | Status |
 |---|---|---|---|
-| 1 | `employees/show.blade.php` belum dibuat | High | Pending |
-| 2 | `employees/edit.blade.php` belum dibuat | High | Pending |
-| 3 | EmployeePolicy belum ada | Medium | Pending |
-| 4 | Employee index: pagination belum ada (semua dimuat sekaligus) | Low | Pending |
+| 1 | `employees/show.blade.php` belum dibuat | High | ✅ Done (Session #5) |
+| 2 | `employees/edit.blade.php` belum dibuat | High | ✅ Done (Session #5) |
+| 3 | EmployeePolicy belum ada | Medium | ✅ Done (Session #6) |
+| 4 | Employee index: pagination belum ada (semua dimuat sekaligus) | Low | Backlog — Fase 2 nanti |
+| 5 | `RolePermissionSeeder`: `manage-employees` permission invalid | High | ✅ Fixed (Session #6) |
+| 6 | `Controller.php` tidak punya `AuthorizesRequests` trait | High | ✅ Fixed (Session #6) |
 
 ---
 
 ## Session Log
 
-### Session #1 — 4 Maret 2026
-**Goal:** Lengkapi semua dokumentasi project
+### Session #5 — 4 Maret 2026
+**Goal:** Employee Show + Edit views + Seeders demo data
 **Hasil:**
-- Dibuat 12 dokumen lengkap (10 technical docs + CODEBASE.md + PROGRESS.md)
-- Revisi: hapus Procurement, confirm single-company, switch Vue → Blade
-- Cross-check alignment semua dokumen (3 inkonsistensi ditemukan & fixed)
+- `employees/show.blade.php`: detail view (info pribadi, data sensitif RBAC-gated, riwayat jabatan, bank, BPJS)
+- `employees/edit.blade.php`: edit form 2-tab (Info Pribadi, Info Pekerjaan)
+- Seeders: `JobLevelSeeder`, `DepartmentSeeder`, `PositionSeeder`, `EmployeeSeeder` (demo: Andi Wijaya)
+- Test manual: show + edit page verified via browser ✅
 
-### Session #2 — 4 Maret 2026
-**Goal:** Fase 1 Foundation — setup Laravel, auth, RBAC, encryption, base UI
+### Session #6 — 4 Maret 2026
+**Goal:** EmployeePolicy + Feature Tests + Employee Documents + v1.0.0
 **Hasil:**
-- Install Breeze + Spatie Permission, konfigurasi .env (ENCRYPTION_KEY, HMAC_KEY, sync queue)
-- EncryptionHelper: `encrypt_field()`, `decrypt_field()`, `hmac_hash()`
-- Auditable trait + AuditLog model (immutable, ULID)
-- RolePermissionSeeder: 5 roles + 20 permissions, 1 super admin seeded
-- Custom layouts: dark sidebar RBAC-aware, glassmorphism login, dashboard dengan stats cards
-- Fix Tailwind v4 (vite.config.js + postcss.config.js) + Blade component path
-- Git init + push ke github.com/ifocabot/orcahr (master branch)
-
-### Session #3 — 4 Maret 2026
-**Goal:** Settings CRUD (Job Level, Department, Position) + UX Pattern Drawer + SweetAlert2
-**Hasil:**
-- JobLevel, Department (self-ref), Position — migrations + models + services + controllers + views
-- Drawer-based CRUD (no /create /edit pages separate)
-- `x-drawer` Blade component (reusable, 5 sizes, ESC + backdrop click close)
-- SweetAlert2: `window.toast()` + `window.confirmDelete()`
-- Routes: `->except(['create','edit'])` untuk settings resources
-
-### Session #4 — 4 Maret 2026
-**Goal:** Employee Core — Migration, Model, Service, Controller, Views (Create + Index)
-**Hasil:**
-- 4 migrations: employees (NIK dual-column encrypted+HMAC), employments (effective-dated), bank_accounts, employee_bpjs
-- Encryptable trait: auto-encrypt/decrypt, HMAC hash support
-- EmployeeService: `generateEmployeeNumber()` (RKS-YYYY-NNNN), `isNikTaken()` (no decrypt), DB::transaction create/update
-- Employee create form: 4 tabs (Info Pribadi, Info Pekerjaan, Rekening Bank, BPJS)
-- Permissions: create/edit/delete-employees, view-employment-history, manage-bank-accounts/bpjs
-- Verified: tombol Tambah Karyawan muncul, tabs berfungsi ✅
-
-**Next:** `employees/show.blade.php` + `employees/edit.blade.php`
+- `EmployeePolicy`: 6 methods (viewAny, view, create, update, delete, viewSensitiveData), super-admin bypass via `before()`
+- Fix `Controller.php`: tambah `AuthorizesRequests` trait
+- Fix `RolePermissionSeeder`: hapus `manage-employees` (invalid), ganti dengan granular permissions
+- `EmployeeController`: authorize() explicit per method (create, index, show, edit, destroy)
+- `.env.testing`: SQLite in-memory untuk test isolation
+- `EncryptionHelperTest`: 7 unit tests — **7/7 ✅**
+- `EmployeeCrudTest`: 9 feature tests — **9/9 ✅**
+- `EmployeeRbacTest`: 9 feature tests — **9/9 ✅**
+- Employee Documents (Slice 6): migration + model + DocumentService + controller + view partial
+- `git tag v1.0.0` — Fase 1 complete! 🎉
 
 ---
 

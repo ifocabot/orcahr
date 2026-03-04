@@ -1,10 +1,13 @@
 <?php
 
+use App\Http\Controllers\Attendance\ClockController;
 use App\Http\Controllers\Attendance\ScheduleController;
 use App\Http\Controllers\Employee\EmployeeDocumentController;
 use App\Http\Controllers\Employee\EmployeeController;
+use App\Http\Controllers\Leave\LeaveController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Settings\DepartmentController;
+use App\Http\Controllers\Settings\HolidayController;
 use App\Http\Controllers\Settings\JobLevelController;
 use App\Http\Controllers\Settings\PositionController;
 use App\Http\Controllers\Settings\ShiftController;
@@ -25,6 +28,20 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+// Attendance — halaman absensi harian karyawan
+Route::middleware(['auth'])->prefix('attendance')->name('attendance.')->group(function () {
+    Route::get('/clock', [ClockController::class, 'index'])->name('clock');
+    Route::post('/clock', [ClockController::class, 'store'])->name('clock.store');
+});
+
+// Leave
+Route::middleware(['auth'])->prefix('leave')->name('leave.')->group(function () {
+    Route::get('/', [LeaveController::class, 'index'])->name('index');
+    Route::post('/', [LeaveController::class, 'store'])->name('store');
+    Route::post('/{leave}/approve', [LeaveController::class, 'approve'])->name('approve');
+    Route::post('/{leave}/reject', [LeaveController::class, 'reject'])->name('reject');
 });
 
 // Employee Management
@@ -51,6 +68,7 @@ Route::middleware(['auth'])->prefix('settings')->name('settings.')->group(functi
     Route::resource('departments', DepartmentController::class)->except(['create', 'edit']);
     Route::resource('positions', PositionController::class)->except(['create', 'edit']);
     Route::resource('shifts', ShiftController::class)->except(['create', 'edit']);
+    Route::resource('holidays', HolidayController::class)->except(['create', 'edit']);
 });
 
 require __DIR__ . '/auth.php';

@@ -38,6 +38,7 @@ class RolePermissionSeeder extends Seeder
             'manage-leave',
             'view-leave',
             'approve-leave',
+            'manage-holidays',
 
             // Payroll
             'manage-payroll',

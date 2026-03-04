@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Employee\EmployeeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Settings\DepartmentController;
 use App\Http\Controllers\Settings\JobLevelController;
@@ -21,6 +22,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+// Employee Management
+Route::middleware(['auth'])->group(function () {
+    Route::resource('employees', EmployeeController::class);
 });
 
 // Settings (sistem) — hanya super-admin via 'system-settings' permission

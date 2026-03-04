@@ -6,6 +6,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Settings\DepartmentController;
 use App\Http\Controllers\Settings\JobLevelController;
 use App\Http\Controllers\Settings\PositionController;
+use App\Http\Controllers\Settings\ShiftController;
 use Illuminate\Support\Facades\Route;
 
 // Redirect root ke dashboard
@@ -42,6 +43,7 @@ Route::middleware(['auth'])->prefix('settings')->name('settings.')->group(functi
     Route::resource('job-levels', JobLevelController::class)->except(['create', 'edit']);
     Route::resource('departments', DepartmentController::class)->except(['create', 'edit']);
     Route::resource('positions', PositionController::class)->except(['create', 'edit']);
+    Route::resource('shifts', ShiftController::class)->except(['create', 'edit']);
 });
 
 require __DIR__ . '/auth.php';

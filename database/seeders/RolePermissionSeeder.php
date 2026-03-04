@@ -29,6 +29,7 @@ class RolePermissionSeeder extends Seeder
             'manage-bpjs',
 
             // Attendance
+            'manage-shifts',
             'manage-attendance',
             'view-attendance',
             'approve-attendance',

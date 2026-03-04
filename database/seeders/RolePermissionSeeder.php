@@ -19,9 +19,14 @@ class RolePermissionSeeder extends Seeder
             'view-audit',
 
             // Employee
-            'manage-employees',
             'view-employees',
+            'create-employees',
+            'edit-employees',
+            'delete-employees',
+            'view-employment-history',
             'view-sensitive-data',      // NIK, NPWP, rekening
+            'manage-bank-accounts',
+            'manage-bpjs',
 
             // Attendance
             'manage-attendance',

@@ -11,6 +11,9 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call(RolePermissionSeeder::class);
+        $this->call(JobLevelSeeder::class);
+        $this->call(DepartmentSeeder::class);
+        $this->call(PositionSeeder::class);
 
         // Super Admin default — unsetEventDispatcher agar Auditable tidak jalan saat seed
         User::unsetEventDispatcher();

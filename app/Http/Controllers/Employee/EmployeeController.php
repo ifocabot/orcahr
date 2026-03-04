@@ -91,6 +91,7 @@ class EmployeeController extends Controller
             'employments.position',
             'bankAccounts',
             'bpjs',
+            'documents',
         ]);
         return view('employees.show', compact('employee'));
     }

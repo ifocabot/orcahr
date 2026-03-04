@@ -196,13 +196,15 @@
                         <div>
                             <p class="text-xs text-gray-400">Tanggal Masuk</p>
                             <p class="font-medium text-gray-900">
-                                {{ $employee->currentEmployment->join_date->format('d F Y') }}</p>
+                                {{ $employee->currentEmployment->join_date->format('d F Y') }}
+                            </p>
                         </div>
                         @if($employee->currentEmployment->end_date)
                             <div>
                                 <p class="text-xs text-gray-400">Tanggal Berakhir</p>
                                 <p class="font-medium text-gray-900 text-amber-600">
-                                    {{ $employee->currentEmployment->end_date->format('d F Y') }}</p>
+                                    {{ $employee->currentEmployment->end_date->format('d F Y') }}
+                                </p>
                             </div>
                         @endif
                     @else
@@ -268,6 +270,11 @@
             @endcan
 
         </div>
+    </div>
+
+    {{-- Dokumen Karyawan --}}
+    <div class="mt-5">
+        @include('employees.partials.documents')
     </div>
 
 </x-layouts.app>

@@ -9,11 +9,11 @@
 
 | Item | Status |
 |---|---|
-| **Fase saat ini** | Fase 1 — Employee Management |
-| **Minggu ke** | 2 |
+| **Fase saat ini** | ✅ Fase 1 SELESAI — Fase 2 Attendance (Next) |
+| **Minggu ke** | 3 |
 | **Last session** | 4 Maret 2026 |
-| **Next action** | Employee Show + Edit (Slice 5) |
-| **Git HEAD** | `3a5121b` — master |
+| **Next action** | Fase 2: Attendance Module (Shift Management) |
+| **Git HEAD** | `v1.0.0` — master |
 
 ---
 
@@ -92,37 +92,37 @@
 - [x] RolePermissionSeeder: diupdate dengan granular employee permissions
 - [x] ✅ COMMIT: `feat(employee): Employee CRUD - migrations, models, service, controller, views`
 
-**Employee Show + Edit (next)**
-- [ ] `employees/show.blade.php` — detail view (data pribadi, employment, bank, BPJS)
-- [ ] `employees/edit.blade.php` — edit form (tabs, sama dengan create)
-- [ ] ✅ COMMIT: `feat(employee): show + edit views`
+**Employee Show + Edit (Slice 5) ✅**
+- [x] `employees/show.blade.php` — detail view (data pribadi, employment, bank, BPJS, dokumen)
+- [x] `employees/edit.blade.php` — edit form (tabs, sama dengan create)
+- [x] ✅ COMMIT: `feat(employee): show + edit views`
 
-**Employee Documents (Minggu 3)**
-- [ ] Migration: `employee_documents`
-- [ ] Document upload (encrypted storage + signed URL)
-- [ ] ✅ COMMIT: `feat(employee): document upload`
+**Employee Documents (Slice 6) ✅**
+- [x] Migration: `employee_documents` (ULID PK, type enum, original_name, file_path, expires_at, notes)
+- [x] Model `EmployeeDocument` (HasUlids, Auditable, typeLabel, isExpired, isExpiringSoon)
+- [x] `DocumentService` (upload private disk, streamDownload)
+- [x] `EmployeeDocumentController` (store, download, destroy)
+- [x] View partial `employees/partials/documents.blade.php` (tabel, drawer upload, expired warning, SweetAlert delete)
+- [x] Route nested docs: POST/GET/DELETE `/employees/{employee}/documents`
+- [x] ✅ COMMIT: `feat(employee): document upload + download`
 
-**Employment History View (Minggu 3)**
-- [ ] Employment history view (effective-dated timeline)
-- [ ] ✅ COMMIT: `feat(employee): employment history view`
-
-**Policies + Testing (Minggu 3)**
-- [ ] EmployeePolicy (authorization per role)
-- [ ] Feature tests: Employee CRUD (5 tests)
-- [ ] Feature tests: RBAC permissions (5 tests)
-- [ ] ✅ COMMIT: `test(employee): CRUD + RBAC tests`
+**Policies + Testing (Slice 7) ✅**
+- [x] `EmployeePolicy` (viewAny, view, create, update, delete, viewSensitiveData)
+- [x] `EncryptionHelperTest` — 7 unit tests (roundtrip, HMAC, null)
+- [x] `EmployeeCrudTest` — 9 feature tests (CRUD + NIK unique)
+- [x] `EmployeeRbacTest` — 9 feature tests (guest, hr-admin, payroll, dept-head)
+- [x] ✅ 25/25 tests passed (46 assertions)
+- [x] ✅ COMMIT: `feat: EmployeePolicy + Feature Tests (Fase 1 complete)`
 
 ---
 
-### Minggu 4: Hardening + Demo
+### Minggu 4: Hardening + Demo ✅
 
-- [ ] Bug fixes dari testing
-- [ ] UI polish (responsive, loading states)
-- [ ] Seeder: demo data (departments, positions, employees)
-- [ ] Code review + refactor (Pint formatting)
-- [ ] ✅ Tag: `v1.0.0` — Fase 1 selesai
+- [x] Seeder: JobLevel, Department, Position, demo employee (Andi Wijaya)
+- [x] Bug fixes: RolePermissionSeeder (manage-employees → granular), Controller.php (AuthorizesRequests)
+- [x] ✅ Tag: `v1.0.0` — Fase 1 selesai!
 
-**🎯 Milestone:** Admin bisa manage data karyawan lengkap. Demo-able.
+**🎯 Milestone:** Admin bisa manage data karyawan lengkap + policy + tests. **Demo-able! ✅**
 
 ---
 

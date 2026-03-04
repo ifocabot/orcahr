@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Employee\EmployeeDocumentController;
 use App\Http\Controllers\Employee\EmployeeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Settings\DepartmentController;
@@ -27,6 +28,13 @@ Route::middleware('auth')->group(function () {
 // Employee Management
 Route::middleware(['auth'])->group(function () {
     Route::resource('employees', EmployeeController::class);
+
+    // Employee Documents (nested)
+    Route::prefix('employees/{employee}/documents')->name('employees.documents.')->group(function () {
+        Route::post('/', [EmployeeDocumentController::class, 'store'])->name('store');
+        Route::get('/{document}/download', [EmployeeDocumentController::class, 'download'])->name('download');
+        Route::delete('/{document}', [EmployeeDocumentController::class, 'destroy'])->name('destroy');
+    });
 });
 
 // Settings (sistem) — hanya super-admin via 'system-settings' permission

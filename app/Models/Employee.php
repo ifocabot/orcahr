@@ -84,4 +84,10 @@ class Employee extends Model
     {
         return $this->hasOne(EmployeeBpjs::class);
     }
+
+    public function documents(): HasMany
+    {
+        return $this->hasMany(EmployeeDocument::class)->latest();
+    }
 }
+

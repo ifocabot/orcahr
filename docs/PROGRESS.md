@@ -9,10 +9,10 @@
 
 | Item | Status |
 |---|---|
-| **Fase saat ini** | Pre-development (dokumentasi) |
-| **Minggu ke** | 0 |
+| **Fase saat ini** | Fase 1 — Employee Management |
+| **Minggu ke** | 2 |
 | **Last session** | 4 Maret 2026 |
-| **Next action** | Mulai Fase 1: Laravel setup + auth + RBAC |
+| **Next action** | Department CRUD (vertical slice pertama) |
 
 ---
 
@@ -39,21 +39,22 @@
 ### Minggu 1: Foundation
 
 **Hari 1-2: Project Setup**
-- [ ] `laravel new orcahr` (Laravel 12) + Tailwind + Alpine + Vite
-- [ ] Breeze install → hapus views → keep auth controllers + routes
-- [ ] Spatie Permission: 5 roles, base permissions
-- [ ] Base layout: sidebar, navbar (custom Blade components)
+- [x] Laravel 12 fresh install + Breeze + Spatie Permission
+- [x] Breeze: keep auth controllers + routes, views custom sendiri
+- [x] Spatie Permission: 5 roles (super-admin, hr-admin, payroll-admin, dept-head, employee)
+- [x] Base layout: sidebar dark, custom Blade components (x-layouts.app, x-layouts.auth)
 
 **Hari 3-4: Security Foundation**
-- [ ] Encryption helpers (`encrypt_field`, `decrypt_field`, `hmac_hash`)
-- [ ] Audit log system (Observer/Trait)
-- [ ] Base Service class pattern
-- [ ] Test: encryption roundtrip (3 tests)
+- [x] Encryption helpers (`encrypt_field`, `decrypt_field`, `hmac_hash`) — AES-256-CBC + HMAC-SHA256
+- [x] Audit log system (Auditable trait — auto-log created/updated/deleted, mask encrypted)
+- [x] AuditLog model (HasUlids, immutable, polymorphic)
 
 **Hari 5: Hardening**
-- [ ] RBAC middleware + Blade directives (`@can`, `@role`)
-- [ ] Test: RBAC basic (3 tests)
-- [ ] ✅ COMMIT: `feat(foundation): auth + rbac + encryption`
+- [x] RBAC middleware + Blade directives (`@can`, `@role`) via Spatie
+- [x] Custom login view (glassmorphism), dashboard view (stats cards)
+- [x] Tailwind v4 setup fix, Vite build clean
+- [x] ✅ COMMIT: `feat(foundation): auth + rbac + encryption + base UI`
+- [x] ✅ PUSH: `github.com/ifocabot/orcahr` (branch: master)
 
 ### Minggu 2: Employee Management — Organisation
 
@@ -148,6 +149,10 @@
 | 4 Mar 2026 | ULID (bukan auto-increment) | Non-guessable IDs, sortable, secure |
 | 4 Mar 2026 | Breeze auth (logic only) | Auth controllers dari Breeze, views custom sendiri |
 | 4 Mar 2026 | Vertical Slice workflow | Fitur lengkap end-to-end, bukan layer-by-layer |
+| 4 Mar 2026 | Spatie migration: char(26) untuk model_id | ULID bukan bigint, pivot table harus char(26) |
+| 4 Mar 2026 | Tailwind v4 via @tailwindcss/vite | Hapus dari postcss.config.js, pakai Vite plugin |
+| 4 Mar 2026 | Blade layout di components/layouts/ | x-layouts.app butuh resources/views/components/layouts/ |
+| 4 Mar 2026 | QUEUE_CONNECTION=sync (local) | Redis nanti di production — zero code change needed |
 
 ---
 
@@ -172,7 +177,23 @@
 - Revisi: hapus Procurement, confirm single-company, switch Vue → Blade
 - Cross-check alignment semua dokumen (3 inkonsistensi ditemukan & fixed)
 
-**Next:** Mulai coding Fase 1
+### Session #2 — 4 Maret 2026
+**Goal:** Fase 1 Foundation — setup Laravel, auth, RBAC, encryption, base UI
+**Hasil:**
+- Install Breeze + Spatie Permission, konfigurasi .env (ENCRYPTION_KEY, HMAC_KEY, sync queue)
+- EncryptionHelper: `encrypt_field()`, `decrypt_field()`, `hmac_hash()`
+- Auditable trait + AuditLog model (immutable, ULID)
+- RolePermissionSeeder: 5 roles + 20 permissions, 1 super admin seeded
+- Custom layouts: dark sidebar RBAC-aware, glassmorphism login, dashboard dengan stats cards
+- Fix Tailwind v4 (vite.config.js + postcss.config.js) + Blade component path
+- Git init + push ke github.com/ifocabot/orcahr (master branch)
+
+**Issues ditemukan & solved:**
+- Spatie migration bigint vs ULID → fix ke char(26)
+- Tailwind v4 dual-config conflict → hapus dari postcss, pakai @tailwindcss/vite
+- Blade `<x-layouts.auth>` path salah → pindah ke `resources/views/components/layouts/`
+
+**Next:** Department CRUD (vertical slice pertama Minggu 2)
 
 ---
 

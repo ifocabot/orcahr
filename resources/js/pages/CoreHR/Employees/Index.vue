@@ -1,21 +1,18 @@
 <script setup lang="ts">
+import { h, ref, watch } from 'vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { Users, Plus, Search, Eye, Pencil } from 'lucide-vue-next';
+import { useDebounceFn } from '@vueuse/core';
+import type { ColumnDef } from '@tanstack/vue-table';
 import AppLayout from '@/layouts/AppLayout.vue';
+import DataTable, { type PaginationMeta } from '@/components/DataTable.vue';
+import StatusBadge from '@/components/StatusBadge.vue';
 import { index as employeesIndex, create as employeesCreate, show as employeesShow, edit as employeesEdit } from '@/routes/employees';
 import type { BreadcrumbItem } from '@/types';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import {
-    Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from '@/components/ui/table';
-import {
-    Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from '@/components/ui/select';
-import { ref, watch } from 'vue';
-import { useDebounceFn } from '@vueuse/core';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 type Employee = {
     id: number;
@@ -77,14 +74,61 @@ watch([departmentId, status], () => {
     }, { preserveState: true, replace: true });
 });
 
-const statusColor = (s: string) => {
-    const map: Record<string, string> = {
-        active: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200',
-        probation: 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200',
-        resigned: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
-        terminated: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
-    };
-    return map[s] ?? '';
+const columns: ColumnDef<Employee, unknown>[] = [
+    {
+        accessorKey: 'employee_code',
+        header: 'Kode',
+        cell: ({ row }) => h('span', { class: 'font-mono text-xs' }, row.original.employee_code),
+    },
+    {
+        accessorKey: 'full_name',
+        header: 'Nama',
+        cell: ({ row }) => h('span', { class: 'font-medium' }, row.original.full_name),
+    },
+    {
+        id: 'department',
+        header: 'Departemen',
+        cell: ({ row }) => row.original.department?.name ?? '-',
+    },
+    {
+        id: 'position',
+        header: 'Jabatan',
+        cell: ({ row }) => row.original.position?.name ?? '-',
+    },
+    {
+        accessorKey: 'employment_status',
+        header: 'Status',
+        cell: ({ row }) => h(StatusBadge, { status: row.original.employment_status }),
+    },
+    {
+        accessorKey: 'join_date',
+        header: 'Tgl. Masuk',
+    },
+    {
+        id: 'actions',
+        header: 'Aksi',
+        cell: ({ row }) => h('div', { class: 'flex gap-1' }, [
+            h(Link, { href: employeesShow.url(row.original.id) }, () =>
+                h(Button, { variant: 'ghost', size: 'icon', class: 'h-8 w-8' }, () =>
+                    h(Eye, { class: 'h-4 w-4' }),
+                ),
+            ),
+            h(Link, { href: employeesEdit.url(row.original.id) }, () =>
+                h(Button, { variant: 'ghost', size: 'icon', class: 'h-8 w-8' }, () =>
+                    h(Pencil, { class: 'h-4 w-4' }),
+                ),
+            ),
+        ]),
+        meta: { class: 'w-[100px]' },
+    },
+];
+
+const pagination: PaginationMeta = {
+    current_page: props.employees.current_page,
+    last_page: props.employees.last_page,
+    per_page: props.employees.per_page,
+    total: props.employees.total,
+    links: props.employees.links,
 };
 </script>
 
@@ -141,72 +185,12 @@ const statusColor = (s: string) => {
                     </div>
 
                     <!-- Table -->
-                    <div class="rounded-md border">
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Kode</TableHead>
-                                    <TableHead>Nama</TableHead>
-                                    <TableHead>Departemen</TableHead>
-                                    <TableHead>Jabatan</TableHead>
-                                    <TableHead>Status</TableHead>
-                                    <TableHead>Tgl. Masuk</TableHead>
-                                    <TableHead class="w-[100px]">Aksi</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                <TableRow v-for="emp in employees.data" :key="emp.id" class="hover:bg-muted/50">
-                                    <TableCell class="font-mono text-xs">{{ emp.employee_code }}</TableCell>
-                                    <TableCell class="font-medium">{{ emp.full_name }}</TableCell>
-                                    <TableCell>{{ emp.department?.name ?? '-' }}</TableCell>
-                                    <TableCell>{{ emp.position?.name ?? '-' }}</TableCell>
-                                    <TableCell>
-                                        <Badge :class="statusColor(emp.employment_status)" variant="secondary">
-                                            {{ emp.employment_status }}
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell>{{ emp.join_date }}</TableCell>
-                                    <TableCell>
-                                        <div class="flex gap-1">
-                                            <Link :href="employeesShow.url(emp.id)">
-                                                <Button variant="ghost" size="icon" class="h-8 w-8">
-                                                    <Eye class="h-4 w-4" />
-                                                </Button>
-                                            </Link>
-                                            <Link :href="employeesEdit.url(emp.id)">
-                                                <Button variant="ghost" size="icon" class="h-8 w-8">
-                                                    <Pencil class="h-4 w-4" />
-                                                </Button>
-                                            </Link>
-                                        </div>
-                                    </TableCell>
-                                </TableRow>
-                                <TableRow v-if="employees.data.length === 0">
-                                    <TableCell col-span="7" class="text-center py-8 text-muted-foreground">
-                                        Belum ada data karyawan
-                                    </TableCell>
-                                </TableRow>
-                            </TableBody>
-                        </Table>
-                    </div>
-
-                    <!-- Pagination -->
-                    <div class="mt-4 flex items-center justify-between text-sm text-muted-foreground">
-                        <span>Halaman {{ employees.current_page }} dari {{ employees.last_page }} ({{ employees.total }} data)</span>
-                        <div class="flex gap-1">
-                            <template v-for="link in employees.links" :key="link.label">
-                                <Link
-                                    v-if="link.url"
-                                    :href="link.url"
-                                    class="px-3 py-1 rounded text-sm border"
-                                    :class="link.active ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'"
-                                    v-html="link.label"
-                                    preserve-state
-                                />
-                                <span v-else class="px-3 py-1 rounded text-sm border opacity-50" v-html="link.label" />
-                            </template>
-                        </div>
-                    </div>
+                    <DataTable
+                        :columns="columns"
+                        :data="employees.data"
+                        :pagination="pagination"
+                        empty-message="Belum ada data karyawan"
+                    />
                 </CardContent>
             </Card>
         </div>

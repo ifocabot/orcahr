@@ -22,5 +22,8 @@ class DatabaseSeeder extends Seeder
         $user->assignRole('super-admin');
 
         $this->call(CoreHRSeeder::class);
+        $this->call(AttendanceSeeder::class);
+        $this->call(LeaveTypeSeeder::class);
+        $this->call(PayrollComponentSeeder::class);
     }
 }

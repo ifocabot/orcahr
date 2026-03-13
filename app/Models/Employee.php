@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Employee extends Model
 {
@@ -51,6 +52,7 @@ class Employee extends Model
         });
     }
 
+    // Core relationships
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -71,6 +73,29 @@ class Employee extends Model
         return $this->belongsTo(JobLevel::class);
     }
 
+    // Leave
+    public function leaveRequests(): HasMany
+    {
+        return $this->hasMany(LeaveRequest::class);
+    }
+
+    public function leaveBalances(): HasMany
+    {
+        return $this->hasMany(LeaveBalance::class);
+    }
+
+    // Payroll
+    public function payrollConfigs(): HasMany
+    {
+        return $this->hasMany(EmployeePayrollConfig::class);
+    }
+
+    public function payrollDetails(): HasMany
+    {
+        return $this->hasMany(PayrollDetail::class);
+    }
+
+    // Scopes
     public function scopeActive($query)
     {
         return $query->where('employment_status', 'active');

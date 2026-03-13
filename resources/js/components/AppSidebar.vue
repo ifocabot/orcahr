@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, FolderGit2, LayoutGrid, Users, Building2, Briefcase } from 'lucide-vue-next';
+import { LayoutGrid, Users, Building2, Briefcase, Clock, CalendarDays, CalendarCheck2, ClipboardList, AlertTriangle, LogIn, Wallet, FilePlus, CheckSquare, Clock3, Tags, Coins, BarChart3, Receipt, Calculator } from 'lucide-vue-next';
 import AppLogo from '@/components/AppLogo.vue';
-import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
 import {
@@ -18,42 +17,36 @@ import { dashboard } from '@/routes';
 import type { NavItem } from '@/types';
 
 const mainNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
-    },
+    { title: 'Dashboard', href: dashboard(), icon: LayoutGrid },
 ];
 
 const coreHRNavItems: NavItem[] = [
-    {
-        title: 'Karyawan',
-        href: '/employees',
-        icon: Users,
-    },
-    {
-        title: 'Departemen',
-        href: '/departments',
-        icon: Building2,
-    },
-    {
-        title: 'Jabatan',
-        href: '/positions',
-        icon: Briefcase,
-    },
+    { title: 'Karyawan',   href: '/employees',  icon: Users },
+    { title: 'Departemen', href: '/departments', icon: Building2 },
+    { title: 'Jabatan',    href: '/positions',   icon: Briefcase },
 ];
 
-const footerNavItems: NavItem[] = [
-    {
-        title: 'Repository',
-        href: 'https://github.com/laravel/vue-starter-kit',
-        icon: FolderGit2,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#vue',
-        icon: BookOpen,
-    },
+const attendanceNavItems: NavItem[] = [
+    { title: 'Clock In/Out',  href: '/attendance/clock',      icon: LogIn },
+    { title: 'Shift',         href: '/attendance/shifts',     icon: Clock },
+    { title: 'Jadwal',        href: '/attendance/schedules',  icon: CalendarDays },
+    { title: 'Timesheet',     href: '/attendance/timesheet',  icon: ClipboardList },
+    { title: 'Pengecualian',  href: '/attendance/exceptions', icon: AlertTriangle },
+];
+
+const leaveNavItems: NavItem[] = [
+    { title: 'Saldo Cuti',    href: '/leave/balance',            icon: Wallet },
+    { title: 'Ajukan Cuti',   href: '/leave/requests/create',    icon: FilePlus },
+    { title: 'Riwayat Cuti',  href: '/leave/requests',           icon: CalendarCheck2 },
+    { title: 'Approval Cuti', href: '/leave/requests/approval',  icon: CheckSquare },
+    { title: 'Izin ½ Hari',   href: '/leave/half-day/create',    icon: Clock3 },
+    { title: 'Jenis Cuti',    href: '/leave/types',              icon: Tags },
+];
+
+const payrollNavItems: NavItem[] = [
+    { title: 'Komponen Gaji', href: '/payroll/components', icon: Coins },
+    { title: 'Hitung Gaji',   href: '/payroll',            icon: Calculator },
+    { title: 'Slip Saya',     href: '/payroll/my-slip',    icon: Receipt },
 ];
 </script>
 
@@ -74,10 +67,12 @@ const footerNavItems: NavItem[] = [
         <SidebarContent>
             <NavMain :items="mainNavItems" />
             <NavMain :items="coreHRNavItems" label="Core HR" />
+            <NavMain :items="attendanceNavItems" label="Absensi" />
+            <NavMain :items="leaveNavItems" label="Cuti" />
+            <NavMain :items="payrollNavItems" label="Payroll" />
         </SidebarContent>
 
         <SidebarFooter>
-            <NavFooter :items="footerNavItems" />
             <NavUser />
         </SidebarFooter>
     </Sidebar>

@@ -24,4 +24,13 @@ export default defineConfig({
             formVariants: true,
         }),
     ],
+    build: {
+        rollupOptions: {
+            onwarn(warning, warn) {
+                // Suppress "use client" directive warnings from Radix UI / node_modules
+                if (warning.code === 'MODULE_LEVEL_DIRECTIVE') return;
+                warn(warning);
+            },
+        },
+    },
 });

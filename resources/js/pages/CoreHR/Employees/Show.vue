@@ -6,7 +6,7 @@ import type { BreadcrumbItem } from '@/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Pencil, Shield } from 'lucide-vue-next';
+import { ArrowLeft, Pencil, Shield, Settings2, Coins } from 'lucide-vue-next';
 
 const props = defineProps<{
     employee: {
@@ -152,6 +152,26 @@ const statusLabel: Record<string, string> = {
                     </CardContent>
                 </Card>
             </div>
+
+            <!-- HR Actions -->
+            <Card>
+                <CardHeader>
+                    <CardTitle class="text-base">Aksi HR</CardTitle>
+                </CardHeader>
+                <CardContent class="flex flex-wrap gap-3">
+                    <Link :href="`/employees/${employee.id}/payroll-configs`">
+                        <button class="inline-flex items-center gap-2 rounded-lg border border-border bg-background px-4 py-2.5 text-sm font-medium shadow-sm transition hover:bg-muted">
+                            <Coins class="h-4 w-4 text-primary" /> Konfigurasi Gaji
+                        </button>
+                    </Link>
+                    <Link :href="`/employees/${employee.id}/edit`">
+                        <button class="inline-flex items-center gap-2 rounded-lg border border-border bg-background px-4 py-2.5 text-sm font-medium shadow-sm transition hover:bg-muted">
+                            <Settings2 class="h-4 w-4" /> Edit Data Karyawan
+                        </button>
+                    </Link>
+                </CardContent>
+            </Card>
+
         </div>
     </AppLayout>
 </template>

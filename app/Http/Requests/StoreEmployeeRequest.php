@@ -30,6 +30,7 @@ class StoreEmployeeRequest extends FormRequest
             'resign_date' => 'nullable|date|after:join_date',
             'employment_status' => 'required|in:active,probation,resigned,terminated',
             'gender' => 'nullable|in:male,female',
+            'manager_id' => 'nullable|exists:employees,id',
         ];
     }
 }

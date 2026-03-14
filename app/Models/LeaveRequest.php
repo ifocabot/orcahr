@@ -18,6 +18,9 @@ class LeaveRequest extends Model
         'total_days',
         'reason',
         'status',
+        'manager_approval_status',
+        'manager_approved_by',
+        'manager_approved_at',
         'approved_by',
         'approved_at',
         'reject_reason',
@@ -26,6 +29,7 @@ class LeaveRequest extends Model
     protected $casts = [
         'start_date' => 'date',
         'end_date' => 'date',
+        'manager_approved_at' => 'datetime',
         'approved_at' => 'datetime',
         'total_days' => 'decimal:1',
     ];
@@ -34,15 +38,17 @@ class LeaveRequest extends Model
     {
         return $this->belongsTo(Employee::class);
     }
-
     public function leaveType(): BelongsTo
     {
         return $this->belongsTo(LeaveType::class);
     }
-
     public function approvedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'approved_by');
+    }
+    public function managerApprover(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'manager_approved_by');
     }
 
     public function scopePending($query)

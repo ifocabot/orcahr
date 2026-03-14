@@ -1,7 +1,10 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Settings\HolidayController;
+use App\Http\Controllers\Settings\SystemSettingController;
 use App\Http\Controllers\Attendance\AttendanceController;
+use App\Http\Controllers\Attendance\RecapController;
 use App\Http\Controllers\Attendance\ExceptionController;
 use App\Http\Controllers\Attendance\ScheduleController;
 use App\Http\Controllers\Attendance\ShiftController;
@@ -16,6 +19,7 @@ use App\Http\Controllers\Leave\LeaveTypeController;
 use App\Http\Controllers\Payroll\EmployeePayrollConfigController;
 use App\Http\Controllers\Payroll\PayrollComponentController;
 use App\Http\Controllers\Payroll\PayrollController;
+use App\Http\Controllers\Payroll\SalaryGradeController;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
@@ -99,6 +103,25 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('employees.payroll-configs.store');
     Route::get('employees/{employee}/payroll-configs', [EmployeePayrollConfigController::class, 'index'])
         ->name('employees.payroll-configs.index');
+
+    // Salary Grades
+    Route::resource('payroll/salary-grades', SalaryGradeController::class)
+        ->only(['index', 'store', 'update', 'destroy'])
+        ->names('payroll.salary-grades');
+    Route::post('payroll/salary-grades/apply', [SalaryGradeController::class, 'applyToEmployee'])
+        ->name('payroll.salary-grades.apply');
+
+    Route::resource('settings/holidays', HolidayController::class)
+        ->only(['index', 'store', 'update', 'destroy'])
+        ->names('settings.holidays');
+
+    // Attendance Recap
+    Route::get('attendance/recap', [RecapController::class, 'index'])->name('attendance.recap');
+    Route::get('attendance/recap/export', [RecapController::class, 'export'])->name('attendance.recap.export');
+
+    // System Settings
+    Route::get('settings/system', [SystemSettingController::class, 'index'])->name('settings.system');
+    Route::put('settings/system', [SystemSettingController::class, 'update'])->name('settings.system.update');
 });
 
 require __DIR__ . '/settings.php';

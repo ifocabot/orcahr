@@ -21,5 +21,9 @@ Schedule::job(new RecalculateDirtySummaries())->everyTenMinutes();
 // Leave: monthly accrual on 1st of each month at 00:05
 Schedule::job(new MonthlyLeaveAccrual())->monthlyOn(1, '00:05');
 
+// Leave: artisan command fallback accrual (same schedule, different entry point)
+Schedule::command('leave:accrue')->monthlyOn(1, '00:06');
+
 // Leave: yearly carryover on 1 January at 00:10
 Schedule::job(new YearlyLeaveCarryover())->yearlyOn(1, 1, '00:10');
+

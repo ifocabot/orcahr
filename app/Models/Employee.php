@@ -27,6 +27,7 @@ class Employee extends Model
         'resign_date',
         'employment_status',
         'gender',
+        'manager_id',
     ];
 
     protected function casts(): array
@@ -63,6 +64,16 @@ class Employee extends Model
         return $this->belongsTo(Department::class);
     }
 
+    public function manager(): BelongsTo
+    {
+        return $this->belongsTo(Employee::class, 'manager_id');
+    }
+
+    public function subordinates(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Employee::class, 'manager_id');
+    }
+
     public function position(): BelongsTo
     {
         return $this->belongsTo(Position::class);
@@ -93,6 +104,11 @@ class Employee extends Model
     public function payrollDetails(): HasMany
     {
         return $this->hasMany(PayrollDetail::class);
+    }
+
+    public function histories(): HasMany
+    {
+        return $this->hasMany(EmployeeHistory::class)->orderByDesc('effective_date')->orderByDesc('created_at');
     }
 
     // Scopes

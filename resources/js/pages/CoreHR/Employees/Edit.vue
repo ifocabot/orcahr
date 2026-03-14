@@ -31,10 +31,12 @@ const props = defineProps<{
         resign_date: string | null;
         employment_status: string;
         gender: string | null;
+        manager_id: number | null;
     };
     departments: { id: number; name: string }[];
     positions: { id: number; name: string; department_id: number }[];
     jobLevels: { id: number; name: string }[];
+    managers: { id: number; full_name: string }[];
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -60,6 +62,7 @@ const form = useForm({
     resign_date: props.employee.resign_date ?? '',
     employment_status: props.employee.employment_status,
     gender: props.employee.gender ?? '',
+    manager_id: props.employee.manager_id ? String(props.employee.manager_id) : '',
 });
 
 const submit = () => {
@@ -196,6 +199,16 @@ const submit = () => {
                         <div class="space-y-2">
                             <Label for="resign_date">Tanggal Resign</Label>
                             <Input id="resign_date" type="date" v-model="form.resign_date" />
+                        </div>
+                        <div class="space-y-2">
+                            <Label>Atasan (Manager)</Label>
+                            <Select v-model="form.manager_id">
+                                <SelectTrigger><SelectValue placeholder="Pilih Manager" /></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="">— Tanpa Atasan</SelectItem>
+                                    <SelectItem v-for="m in managers" :key="m.id" :value="String(m.id)">{{ m.full_name }}</SelectItem>
+                                </SelectContent>
+                            </Select>
                         </div>
                     </CardContent>
                 </Card>

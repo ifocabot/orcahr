@@ -19,10 +19,11 @@ type LeaveRequest = {
     end_date: string;
     total_days: number;
     status: string;
+    manager_approval_status: string;
     reason: string | null;
     reject_reason: string | null;
     leave_type: { id: number; name: string };
-    employee: { id: number; full_name: string; employee_code: string };
+    employee: { id: number; full_name: string; employee_code: string; manager?: { id: number; full_name: string } };
 };
 
 type PaginatedRequests = { data: LeaveRequest[] } & PaginationMeta & { links: { url: string | null; label: string; active: boolean }[] };
@@ -92,8 +93,16 @@ const columns: ColumnDef<LeaveRequest, unknown>[] = [
         cell: ({ row }) => h('span', { class: 'text-sm' }, row.original.reason ?? '-'),
     },
     {
+        id: 'manager_status',
+        header: 'Manager',
+        cell: ({ row }) => {
+            if (!row.original.employee.manager) return h('span', { class: 'text-muted-foreground text-xs italic' }, 'N/A');
+            return h(StatusBadge, { status: row.original.manager_approval_status });
+        },
+    },
+    {
         accessorKey: 'status',
-        header: 'Status',
+        header: 'HR/Final',
         cell: ({ row }) => h(StatusBadge, { status: row.original.status }),
     },
     {

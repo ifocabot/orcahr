@@ -7,6 +7,7 @@ use App\Jobs\ProcessAttendanceBatch;
 use App\Models\AttendanceSummary;
 use App\Models\Employee;
 use App\Models\RawTimeEvent;
+use App\Models\SystemSetting;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -25,9 +26,9 @@ class AttendanceController extends Controller
         return Inertia::render('Attendance/ClockInOut', [
             'employee' => $employee,
             'today' => $todayData,
-            'officeLat' => config('attendance.office_latitude'),
-            'officeLng' => config('attendance.office_longitude'),
-            'radiusMeters' => config('attendance.radius_meters'),
+            'officeLat' => SystemSetting::getOption('attendance.office_latitude', -6.2),
+            'officeLng' => SystemSetting::getOption('attendance.office_longitude', 106.8),
+            'radiusMeters' => SystemSetting::getOption('attendance.radius_meters', 100),
         ]);
     }
 

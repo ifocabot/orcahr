@@ -37,6 +37,7 @@ class EmployeeController extends Controller
             'departments' => Department::where('is_active', true)->get(['id', 'name']),
             'positions' => Position::where('is_active', true)->get(['id', 'name', 'department_id']),
             'jobLevels' => JobLevel::where('is_active', true)->orderBy('level_order')->get(['id', 'name']),
+            'managers' => Employee::active()->get(['id', 'full_name']),
         ]);
     }
 
@@ -50,7 +51,7 @@ class EmployeeController extends Controller
 
     public function show(Employee $employee)
     {
-        $employee->load(['department', 'position', 'jobLevel', 'user']);
+        $employee->load(['department', 'position', 'jobLevel', 'user', 'manager', 'histories.changedBy']);
 
         return Inertia::render('CoreHR/Employees/Show', [
             'employee' => $employee,
@@ -64,6 +65,7 @@ class EmployeeController extends Controller
             'departments' => Department::where('is_active', true)->get(['id', 'name']),
             'positions' => Position::where('is_active', true)->get(['id', 'name', 'department_id']),
             'jobLevels' => JobLevel::where('is_active', true)->orderBy('level_order')->get(['id', 'name']),
+            'managers' => Employee::active()->where('id', '!=', $employee->id)->get(['id', 'full_name']),
         ]);
     }
 

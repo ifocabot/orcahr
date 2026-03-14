@@ -6,6 +6,7 @@ use App\Models\AttendanceException;
 use App\Models\AttendanceSummary;
 use App\Models\EmployeeSchedule;
 use App\Models\RawTimeEvent;
+use App\Models\SystemSetting;
 use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
@@ -85,7 +86,10 @@ class ProcessAttendanceBatch implements ShouldQueue
         $lateMinutes = 0;
         if ($clockIn) {
             $shiftStart = Carbon::parse($workDate . ' ' . $shift->start_time);
-            $lateMinutes = max(0, (int) $shiftStart->diffInMinutes($clockIn->event_time, false));
+            $diffMinutes = (int) $shiftStart->diffInMinutes($clockIn->event_time, false);
+            $tolerance = SystemSetting::getOption('attendance.late_tolerance_minutes', 0);
+
+            $lateMinutes = $diffMinutes > $tolerance ? $diffMinutes : 0;
         }
 
         // Overtime & shift end

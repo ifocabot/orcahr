@@ -28,6 +28,16 @@ const props = defineProps<{
         position?: { id: number; name: string };
         job_level?: { id: number; name: string };
         user?: { id: number; name: string; email: string };
+        manager?: { id: number; full_name: string };
+        histories?: Array<{
+            id: number;
+            change_type: string;
+            old_value: string | null;
+            new_value: string | null;
+            effective_date: string;
+            created_at: string;
+            changed_by: { name: string };
+        }>;
     };
 }>();
 
@@ -109,6 +119,10 @@ const statusLabel: Record<string, string> = {
                             <span class="text-muted-foreground">Level</span>
                             <span>{{ employee.job_level?.name ?? '-' }}</span>
                         </div>
+                        <div class="flex justify-between">
+                            <span class="text-muted-foreground">Atasan Langsung</span>
+                            <span class="font-medium">{{ employee.manager?.full_name ?? '-' }}</span>
+                        </div>
                     </CardContent>
                 </Card>
 
@@ -152,6 +166,39 @@ const statusLabel: Record<string, string> = {
                     </CardContent>
                 </Card>
             </div>
+
+            <!-- Mutation History -->
+            <Card v-if="employee.histories?.length">
+                <CardHeader>
+                    <CardTitle class="text-base flex items-center gap-2">
+                        <Settings2 class="h-4 w-4" /> Riwayat Perubahan & Mutasi
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div class="relative w-full overflow-auto">
+                        <table class="w-full caption-bottom text-sm">
+                            <thead class="[&_tr]:border-b">
+                                <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+                                    <th class="h-10 px-2 text-left align-middle font-medium text-muted-foreground">Tanggal</th>
+                                    <th class="h-10 px-2 text-left align-middle font-medium text-muted-foreground">Tipe Perubahan</th>
+                                    <th class="h-10 px-2 text-left align-middle font-medium text-muted-foreground">Lama</th>
+                                    <th class="h-10 px-2 text-left align-middle font-medium text-muted-foreground">Baru</th>
+                                    <th class="h-10 px-2 text-left align-middle font-medium text-muted-foreground">Oleh</th>
+                                </tr>
+                            </thead>
+                            <tbody class="[&_tr:last-child]:border-0">
+                                <tr v-for="h in employee.histories" :key="h.id" class="border-b transition-colors hover:bg-muted/50">
+                                    <td class="p-2 align-middle">{{ h.effective_date }}</td>
+                                    <td class="p-2 align-middle capitalize">{{ h.change_type }}</td>
+                                    <td class="p-2 align-middle text-muted-foreground">{{ h.old_value ?? '-' }}</td>
+                                    <td class="p-2 align-middle font-medium">{{ h.new_value ?? '-' }}</td>
+                                    <td class="p-2 align-middle text-xs">{{ h.changed_by.name }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </CardContent>
+            </Card>
 
             <!-- HR Actions -->
             <Card>

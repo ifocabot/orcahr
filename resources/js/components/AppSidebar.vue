@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import { LayoutGrid, Users, Building2, Briefcase, Clock, CalendarDays, CalendarCheck2, ClipboardList, AlertTriangle, LogIn, Wallet, FilePlus, CheckSquare, Clock3, Tags, Coins, BarChart3, Receipt, Calculator } from 'lucide-vue-next';
+import { LayoutGrid, Users, Building2, Briefcase, Clock, CalendarDays, CalendarCheck2, ClipboardList, AlertTriangle, LogIn, Wallet, FilePlus, CheckSquare, Clock3, Tags, Coins, Receipt, Calculator, Layers, Settings2 } from 'lucide-vue-next';
 import AppLogo from '@/components/AppLogo.vue';
 import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
@@ -32,6 +32,7 @@ const attendanceNavItems: NavItem[] = [
     { title: 'Jadwal',        href: '/attendance/schedules',  icon: CalendarDays },
     { title: 'Timesheet',     href: '/attendance/timesheet',  icon: ClipboardList },
     { title: 'Pengecualian',  href: '/attendance/exceptions', icon: AlertTriangle },
+    { title: 'Rekap Kehadiran', href: '/attendance/recap',    icon: AlertTriangle },
 ];
 
 const leaveNavItems: NavItem[] = [
@@ -44,9 +45,15 @@ const leaveNavItems: NavItem[] = [
 ];
 
 const payrollNavItems: NavItem[] = [
-    { title: 'Komponen Gaji', href: '/payroll/components', icon: Coins },
-    { title: 'Hitung Gaji',   href: '/payroll',            icon: Calculator },
-    { title: 'Slip Saya',     href: '/payroll/my-slip',    icon: Receipt },
+    { title: 'Komponen Gaji', href: '/payroll/components',    icon: Coins },
+    { title: 'Skema Gaji',    href: '/payroll/salary-grades', icon: Layers },
+    { title: 'Hitung Gaji',   href: '/payroll',               icon: Calculator },
+    { title: 'Slip Saya',     href: '/payroll/my-slip',       icon: Receipt },
+];
+
+const settingsNavItems: NavItem[] = [
+    { title: 'Hari Libur', href: '/settings/holidays', icon: CalendarDays },
+    { title: 'Sistem',     href: '/settings/system',   icon: Settings2 },
 ];
 </script>
 
@@ -70,6 +77,7 @@ const payrollNavItems: NavItem[] = [
             <NavMain :items="attendanceNavItems" label="Absensi" />
             <NavMain :items="leaveNavItems" label="Cuti" />
             <NavMain :items="payrollNavItems" label="Payroll" />
+            <NavMain :items="settingsNavItems" label="Pengaturan" />
         </SidebarContent>
 
         <SidebarFooter>

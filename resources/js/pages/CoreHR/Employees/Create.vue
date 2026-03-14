@@ -16,6 +16,7 @@ const props = defineProps<{
     departments: { id: number; name: string }[];
     positions: { id: number; name: string; department_id: number }[];
     jobLevels: { id: number; name: string }[];
+    managers: { id: number; full_name: string }[];
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -40,6 +41,7 @@ const form = useForm({
     join_date: '',
     employment_status: 'active',
     gender: '',
+    manager_id: '',
 });
 
 const submit = () => {
@@ -175,6 +177,16 @@ const submit = () => {
                             <Label for="join_date">Tanggal Masuk *</Label>
                             <Input id="join_date" type="date" v-model="form.join_date" />
                             <p v-if="form.errors.join_date" class="text-sm text-destructive">{{ form.errors.join_date }}</p>
+                        </div>
+                        <div class="space-y-2">
+                            <Label>Atasan (Manager)</Label>
+                            <Select v-model="form.manager_id">
+                                <SelectTrigger><SelectValue placeholder="Pilih Manager" /></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="">— Tanpa Atasan</SelectItem>
+                                    <SelectItem v-for="m in managers" :key="m.id" :value="String(m.id)">{{ m.full_name }}</SelectItem>
+                                </SelectContent>
+                            </Select>
                         </div>
                     </CardContent>
                 </Card>

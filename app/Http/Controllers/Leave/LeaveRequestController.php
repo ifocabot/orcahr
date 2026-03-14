@@ -115,52 +115,74 @@ class LeaveRequestController extends Controller
             return back()->withErrors(['status' => 'Request sudah diproses.']);
         }
 
-        $request->update([
-            'status' => 'approved',
-            'approved_by' => auth()->id(),
-            'approved_at' => now(),
-        ]);
+        $employee = $request->employee;
+        $user = auth()->user();
+        $isManager = $employee->manager_id && $employee->manager->user_id === $user->id;
+        $isHR = $user->hasRole(['super-admin', 'hr']);
 
-        // Deduct leave balance: update the latest snapshot by reducing closing_balance
-        $year = now()->year;
-        $balance = LeaveBalance::where('employee_id', $request->employee_id)
-            ->where('leave_type_id', $request->leave_type_id)
-            ->where('entitlement_year', $year)
-            ->latest('balance_date')
-            ->first();
-
-        if ($balance) {
-            $balance->increment('used', (float) $request->total_days);
-            $balance->decrement('closing_balance', (float) $request->total_days);
+        // 1. Manager Approval
+        if ($isManager && $request->manager_approval_status === 'pending') {
+            $request->update([
+                'manager_approval_status' => 'approved',
+                'manager_approved_by' => $user->id,
+                'manager_approved_at' => now(),
+            ]);
+            return back()->with('success', 'Persetujuan manager berhasil dicatat.');
         }
 
-        // Insert attendance_exception per work day in the leave range
-        $period = CarbonPeriod::create($request->start_date, $request->end_date);
+        // 2. HR Final Approval
+        if ($isHR) {
+            if ($employee->manager_id && $request->manager_approval_status === 'pending') {
+                return back()->withErrors(['status' => 'Menunggu persetujuan manager terlebih dahulu.']);
+            }
 
-        foreach ($period as $date) {
-            if ($date->isWeekend())
-                continue;
+            $request->update([
+                'status' => 'approved',
+                'approved_by' => $user->id,
+                'approved_at' => now(),
+            ]);
 
-            AttendanceException::updateOrCreate(
-                [
-                    'employee_id' => $request->employee_id,
-                    'work_date' => $date->toDateString(),
-                    'exception_type' => 'leave',
-                ],
-                [
-                    'reason' => $request->reason ?? 'Cuti disetujui',
-                    'approval_status' => 'approved',
-                    'approved_by' => auth()->id(),
-                ]
-            );
+            // Deduct leave balance: update the latest snapshot by reducing closing_balance
+            $year = now()->year;
+            $balance = LeaveBalance::where('employee_id', $request->employee_id)
+                ->where('leave_type_id', $request->leave_type_id)
+                ->where('entitlement_year', $year)
+                ->latest('balance_date')
+                ->first();
 
-            // Set dirty_flag on any existing summary for this date
-            AttendanceSummary::where('employee_id', $request->employee_id)
-                ->where('work_date', $date->toDateString())
-                ->update(['dirty_flag' => true]);
+            if ($balance) {
+                $balance->increment('used', (float) $request->total_days);
+                $balance->decrement('closing_balance', (float) $request->total_days);
+            }
+
+            // Insert attendance_exception per work day
+            $period = CarbonPeriod::create($request->start_date, $request->end_date);
+            foreach ($period as $date) {
+                if ($date->isWeekend())
+                    continue;
+
+                AttendanceException::updateOrCreate(
+                    [
+                        'employee_id' => $request->employee_id,
+                        'work_date' => $date->toDateString(),
+                        'exception_type' => 'leave',
+                    ],
+                    [
+                        'reason' => $request->reason ?? 'Cuti disetujui',
+                        'approval_status' => 'approved',
+                        'approved_by' => $user->id,
+                    ]
+                );
+
+                AttendanceSummary::where('employee_id', $request->employee_id)
+                    ->where('work_date', $date->toDateString())
+                    ->update(['dirty_flag' => true]);
+            }
+
+            return back()->with('success', 'Cuti disetujui (Final).');
         }
 
-        return back()->with('success', 'Cuti berhasil disetujui.');
+        return back()->withErrors(['status' => 'Anda tidak memiliki otoritas untuk menyetujui request ini.']);
     }
 
     public function reject(LeaveRequest $request)
@@ -173,10 +195,18 @@ class LeaveRequestController extends Controller
             return back()->withErrors(['status' => 'Request sudah diproses.']);
         }
 
+        $user = auth()->user();
+        $isManager = $request->employee->manager_id && $request->employee->manager->user_id === $user->id;
+        $isHR = $user->hasRole(['super-admin', 'hr']);
+
+        if (!$isManager && !$isHR) {
+            return back()->withErrors(['status' => 'Anda tidak memiliki otoritas.']);
+        }
+
         $request->update([
             'status' => 'rejected',
             'reject_reason' => request('reject_reason'),
-            'approved_by' => auth()->id(),
+            'approved_by' => $user->id,
             'approved_at' => now(),
         ]);
 
@@ -229,14 +259,35 @@ class LeaveRequestController extends Controller
     // Manager approval list
     public function approval(Request $request)
     {
-        $pending = LeaveRequest::with(['employee', 'leaveType'])
-            ->when($request->status, fn($q, $s) => $q->where('status', $s), fn($q) => $q->where('status', 'pending'))
+        $user = auth()->user();
+        $isHR = $user->hasRole(['super-admin', 'hr']);
+        $employee = Employee::where('user_id', $user->id)->first();
+
+        $query = LeaveRequest::with(['employee.manager', 'leaveType']);
+
+        // Filtering for manager: only see subordinates
+        if (!$isHR) {
+            if (!$employee) {
+                return Inertia::render('Leave/Approval/Index', [
+                    'requests' => [],
+                    'employees' => [],
+                    'filters' => [],
+                ]);
+            }
+            $query->whereHas('employee', function ($q) use ($employee) {
+                $q->where('manager_id', $employee->id);
+            });
+        }
+
+        $pending = $query->when($request->status, fn($q, $s) => $q->where('status', $s), fn($q) => $q->where('status', 'pending'))
             ->when($request->employee_id, fn($q, $id) => $q->where('employee_id', $id))
             ->orderByDesc('created_at')
             ->paginate(20)
             ->withQueryString();
 
-        $employees = Employee::select('id', 'full_name', 'employee_code')->orderBy('full_name')->get();
+        $employees = $isHR
+            ? Employee::select('id', 'full_name', 'employee_code')->orderBy('full_name')->get()
+            : ($employee ? $employee->subordinates()->select('id', 'full_name', 'employee_code')->get() : []);
 
         return Inertia::render('Leave/Approval/Index', [
             'requests' => $pending,
